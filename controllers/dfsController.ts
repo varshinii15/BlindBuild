@@ -2,9 +2,9 @@ import type { Request, Response } from "express";
 
 
 export const dCD = (req: Request, res: Response) => {
-  const { graph } = req.body;
+  const { input1 } = req.body;
 
-  if (!graph || typeof graph !== "object" || Array.isArray(graph)) {
+  if (!input1 || typeof input1 !== "object" || Array.isArray(input1)) {
     return res.status(400).json({ message: "Error" });
   }
 
@@ -12,14 +12,14 @@ export const dCD = (req: Request, res: Response) => {
   const recStack = new Set<string>();
 
   const dfs = (node: string): boolean => {
-    if (!graph[node]) return false;
+    if (!input1[node]) return false;
     if (recStack.has(node)) return true;
     if (visited.has(node)) return false;
 
     visited.add(node);
     recStack.add(node);
 
-    for (const neighbor of graph[node]) {
+    for (const neighbor of input1[node]) {
       if (dfs(neighbor)) return true;
     }
 
@@ -27,7 +27,7 @@ export const dCD = (req: Request, res: Response) => {
     return false;
   };
 
-  for (const node of Object.keys(graph)) {
+  for (const node of Object.keys(input1)) {
     if (dfs(node)) {
       return res.json({ message: "Success", output: true });
     }
@@ -38,12 +38,15 @@ export const dCD = (req: Request, res: Response) => {
 
 
 export const dSPL = (req: Request, res: Response) => {
-  const { graph, start, target } = req.body;
+  const { input1, input2, input3 } = req.body;
 
-  if (!graph || !start || !target) {
+  if (!input1 || !input2 || !input3) {
     return res.status(400).json({ message: "Error" });
   }
 
+  const graph = input1;
+  const start = input2;
+  const target = input3;
   let minLength = Infinity;
   const visited = new Set<string>();
 
