@@ -78,6 +78,32 @@ exports.getAttendanceStatus = async (req, res) => {
     }
 };
 
+// Undo Attendance
+exports.undoAttendance = async (req, res) => {
+    try {
+        const { ticketId } = req.body;
+        const ticket = await Ticket.findOne({ ticketId });
+
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
+        // Remove from attendance
+        const attendance = await Attendance.findOneAndDelete({ ticketId });
+        if (!attendance) return res.status(400).json({ message: "Attendance record not found" });
+
+        // Reactivate ticket
+        ticket.isValid = true;
+        ticket.status = "Valid";
+        await ticket.save();
+
+        // Remove badge if generated
+        await Badge.findOneAndDelete({ ticketId });
+
+        res.json({ message: "Attendance undone successfully" });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // ---------------- PARTICIPANTS ----------------
 
 // Get Participant Details

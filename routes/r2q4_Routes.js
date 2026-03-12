@@ -8,6 +8,7 @@ router.post("/verify-ticket", checkinController.verifyTicket);
 
 // Attendance
 router.post("/attendance-mark", checkinController.markAttendance);
+router.post("/attendance-undo", checkinController.undoAttendance);
 router.get("/attendance", checkinController.getAttendanceStatus);
 
 // Participant
