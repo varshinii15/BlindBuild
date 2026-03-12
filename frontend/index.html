@@ -33,8 +33,14 @@
                   <input type="text" name="Teamname" required />
                 </div>
                 <div class="form-group">
-                  <label>Team Members (comma separated)</label>
-                  <input type="text" name="TeamMembers" placeholder="Alice, Bob, Charlie" />
+                  <label>Team Members</label>
+                  <div id="team-members-container">
+                    <div class="item-row member-input" style="margin-bottom: 0.5rem; border-left-color: var(--accent);">
+                      <input type="text" placeholder="Name" class="member-name" required style="margin-bottom: 0.25rem;"/>
+                      <input type="email" placeholder="Email" class="member-email" required />
+                    </div>
+                  </div>
+                  <button type="button" id="add-member-btn" class="tab-btn" style="width: 100%; border: 1px dashed var(--border); margin-top: 0.5rem;">+ Add Member</button>
                 </div>
                 <div class="form-group">
                   <label>Password</label>
@@ -100,6 +106,11 @@
                 </div>
                 <button type="submit" class="btn-primary">Verify & Mark Attendance</button>
               </form>
+              <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                <h3>Team Directory</h3>
+                <button id="fetch-all-teams-btn" class="btn-primary" style="margin-top: 0.5rem;">Load All Teams</button>
+                <div id="convenor-teams-list" class="result-list"></div>
+              </div>
             </div>
             <div class="glass-card">
               <h2>Winner Management</h2>

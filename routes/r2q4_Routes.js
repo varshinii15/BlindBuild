@@ -12,6 +12,7 @@ router.post("/attendance-undo", checkinController.undoAttendance);
 router.get("/attendance", checkinController.getAttendanceStatus);
 router.get("/participant", checkinController.getParticipant);
 router.get("/badge", checkinController.generateBadge);
+router.get("/teams", checkinController.getTeams);
 
 // Winner Management
 router.post("/winner", checkinController.addWinner);

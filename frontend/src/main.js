@@ -22,7 +22,7 @@ async function apiCall(endpoint, method = 'GET', data = null) {
 }
 
 // Tab Switching Logic
-const tabButtons = document.querySelectorAll('.tab-btn');
+const tabButtons = document.querySelectorAll('.tabs-nav .tab-btn');
 const tabContents = document.querySelectorAll('.tab-content');
 
 tabButtons.forEach(btn => {
@@ -38,13 +38,37 @@ tabButtons.forEach(btn => {
 });
 
 // --- R2Q1: Events & Registration ---
+document.getElementById('add-member-btn').addEventListener('click', () => {
+  const container = document.getElementById('team-members-container');
+  const div = document.createElement('div');
+  div.className = 'item-row member-input';
+  div.style.marginBottom = '0.5rem';
+  div.style.borderLeftColor = 'var(--accent)';
+  div.innerHTML = `
+    <input type="text" placeholder="Name" class="member-name" required style="margin-bottom: 0.25rem;"/>
+    <input type="email" placeholder="Email" class="member-email" required />
+    <button type="button" class="tab-btn remove-member" style="color: var(--secondary); padding: 5px; font-size: 0.8rem;">Remove</button>
+  `;
+  container.appendChild(div);
+  
+  div.querySelector('.remove-member').addEventListener('click', () => div.remove());
+});
+
 document.getElementById('create-participant-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const data = Object.fromEntries(formData.entries());
-  data.TeamMembers = data.TeamMembers ? data.TeamMembers.split(',').map(m => m.trim()) : [];
   
-  const result = await apiCall('/events/participants', 'POST', data);
+  // Transform dynamic inputs into array of objects
+  const members = [];
+  document.querySelectorAll('.member-input').forEach(row => {
+    const name = row.querySelector('.member-name').value;
+    const email = row.querySelector('.member-email').value;
+    if (name && email) members.push({ name, email });
+  });
+  data.TeamMembers = members;
+  
+  const result = await apiCall('/events/teams', 'POST', data);
   alert('Team Created! ID: ' + result.participant._id);
 });
 
@@ -122,6 +146,18 @@ document.getElementById('verify-ticket-form').addEventListener('submit', async (
       alert(mark.message);
     }
   } catch (err) {}
+});
+
+document.getElementById('fetch-all-teams-btn').addEventListener('click', async () => {
+  const teams = await apiCall('/convenor/teams');
+  const list = document.getElementById('convenor-teams-list');
+  list.innerHTML = teams.map(t => `
+    <div class="item-row">
+      <strong>${t.Teamname}</strong><br>
+      <small>Members: ${t.TeamMembers.map(m => m.name).join(', ')}</small><br>
+      <small>ID: ${t._id}</small>
+    </div>
+  `).join('');
 });
 
 document.getElementById('add-winner-form').addEventListener('submit', async (e) => {

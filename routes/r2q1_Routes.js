@@ -5,7 +5,7 @@ const checkinController = require("../controllers/r2q4_controller");
 
 
 // Participant Routes
-router.post("/participants", appController.createParticipant);
+router.post("/teams", appController.createParticipant);
 router.get("/events", appController.getEvents);
 router.post("/register", appController.registerEvent);
 router.get("/registration-status/:id", appController.getRegistrationStatus);

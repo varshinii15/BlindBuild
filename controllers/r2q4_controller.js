@@ -147,6 +147,18 @@ exports.generateBadge = async (req, res) => {
     }
 };
 
+const Participant = require("../models/r2q1_participant");
+
+// Get All Teams
+exports.getTeams = async (req, res) => {
+    try {
+        const teams = await Participant.find();
+        res.json(teams);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // ---------------- WINNERS ----------------
 
 // Add Winner
