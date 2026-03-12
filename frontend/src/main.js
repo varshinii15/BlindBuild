@@ -77,7 +77,7 @@ document.getElementById('fetch-events-btn').addEventListener('click', async () =
   const list = document.getElementById('events-list');
   list.innerHTML = events.map(ev => `
     <div class="item-row">
-      <strong>${ev.name}</strong><br>
+      <strong>${ev.title}</strong><br>
       <small>${ev.description}</small><br>
       <small>ID: ${ev._id}</small>
     </div>
