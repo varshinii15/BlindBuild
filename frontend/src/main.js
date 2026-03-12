@@ -197,19 +197,25 @@ document.getElementById('report-item-form').addEventListener('submit', async (e)
 
 document.getElementById('view-lost-btn').addEventListener('click', async () => {
   const items = await apiCall('/l-f/lost');
-  updateItemList(items);
+  updateItemList(items, 'lost items');
 });
 
 document.getElementById('view-found-btn').addEventListener('click', async () => {
   const items = await apiCall('/l-f/found');
-  updateItemList(items);
+  updateItemList(items, 'found items');
 });
 
-function updateItemList(items) {
+function updateItemList(items, typeLabel = 'items') {
   const list = document.getElementById('items-list');
+  if (!items || items.length === 0) {
+    list.innerHTML = `<p style="text-align: center; color: var(--secondary); padding: 1rem;">No ${typeLabel} found.</p>`;
+    return;
+  }
   list.innerHTML = items.map(item => `
     <div class="item-row">
       <strong>${item.itemName}</strong> (${item.type})<br>
+      <small>Category: ${item.category}</small><br>
+      <small>Description: ${item.description}</small><br>
       <small>Location: ${item.location} | Status: ${item.status}</small>
     </div>
   `).join('');
