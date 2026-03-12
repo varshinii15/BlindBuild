@@ -1,6 +1,4 @@
-# BlindBuild Hub - Full API Documentation
-
-This document provides a comprehensive list of all routes, methods, and expected data for the BlindBuild event management system.
+# Round 2 Technical Modules - System Documentation
 
 ---
 
@@ -10,12 +8,13 @@ This document provides a comprehensive list of all routes, methods, and expected
 
 ---
 
-## 1. Registration & Event Matrix (R2Q1)
-**Description:** Manages team formation, event listings, and participant registration.
+## 1. Participant & Event Registration (R2Q1)
+**System Description:**
+This module manages team formation and event sign-ups for the festival. It allows participants to create teams with secure passwords and register for specific technical events. The system also generates unique digital tickets for each team, ensuring a smooth transition from registration to physical entry at the venue.
 
 | Function | Method | Endpoint | Payload (Body/Query) |
 | :--- | :--- | :--- | :--- |
-| **Create Team** | `POST` | `/events/teams` | `{ "Teamname": "String", "TeamMembers": [{"name": "S", "email": "S"}], "password": "String" }` |
+| **Create Team** | `POST` | `/events/teams` | `{ "Teamname": "String", "TeamMembers": [{"name": "String", "email": "String"}], "password": "String" }` |
 | **List Events** | `GET` | `/events/events` | *None* |
 | **Register for Event** | `POST` | `/events/register` | `{ "ParticipantId": "ObjectId", "eventId": "ObjectId" }` |
 | **Registration Status** | `GET` | `/events/registration-status/:id` | `id` (Param) |
@@ -25,8 +24,9 @@ This document provides a comprehensive list of all routes, methods, and expected
 
 ---
 
-## 2. Workshop Chrono-Scheduler (R2Q2)
-**Description:** Handles workshop slot discovery and seat reservations.
+## 2. Workshop Slot Booking System (R2Q2)
+**System Description:**
+This module handles the scheduling and seat reservation for various technical workshops. It provides a real-time list of available time slots and ensures that seats are allocated fairly without overbooking. Participants can easily browse all workshops, book their preferred slots, and manage their personal schedules instantly.
 
 | Function | Method | Endpoint | Payload (Body/Query) |
 | :--- | :--- | :--- | :--- |
@@ -35,55 +35,58 @@ This document provides a comprehensive list of all routes, methods, and expected
 | **View Slots** | `GET` | `/w-s/workshops/:id/slots` | `id` (Param) |
 | **Book Slot** | `POST` | `/w-s/book-slot` | `{ "workshopId": "ObjectId", "slotId": "ObjectId", "userId": "String" }` |
 | **Cancel Booking** | `DELETE` | `/w-s/cancel-slot` | `{ "bookingId": "ObjectId" }` |
-| **Booking Status** | `GET` | `/w-s/booking-status` | `?userId=U123` (Query) |
+| **Booking Status** | `GET` | `/w-s/booking-status` | `?userId=String` (Query) |
 
 ---
 
-## 3. Command Center & Convenor Hub (R2Q4)
-**Description:** Administrative tools for attendance, winners, and QR verification.
+## 3. Convenor & Event Management Hub (R2Q4)
+**System Description:**
+This is a central tool for event organizers to manage on-ground operations efficiently. It features a secure ticket verification system to handle participant check-ins and log attendance in real-time. Convenors can also use this hub to announce official event winners and record prize details, keeping all data organized and transparent.
 
 | Function | Method | Endpoint | Payload (Body/Query) |
 | :--- | :--- | :--- | :--- |
-| **Create Event** | `POST` | `/convenor/events` | `{ "title": "String", "description": "String", ... }` |
+| **Create Event** | `POST` | `/convenor/events` | `{ "title": "String", "description": "String", "date": "Date", "location": "String", "capacity": "Number" }` |
 | **Verify Ticket** | `POST` | `/convenor/verify-ticket` | `{ "ticketId": "String" }` |
-| **Mark Attendance** | `POST` | `/convenor/attendance-mark` | `{ "ticketId": "String" }` |
+| **Mark Attendance** | `POST" | `/convenor/attendance-mark` | `{ "ticketId": "String" }` |
 | **Undo Attendance** | `POST` | `/convenor/attendance-undo` | `{ "ticketId": "String" }` |
 | **View Attendance** | `GET` | `/convenor/attendance` | *None* |
 | **Participant Info** | `GET` | `/convenor/participant` | `?id=ObjectId` (Query) |
 | **Generate Badge** | `GET` | `/convenor/badge` | `?ticketId=String` (Query) |
 | **List All Teams** | `GET` | `/convenor/teams` | *None* |
 | **Add Winner** | `POST` | `/convenor/winner` | `{ "eventId": "ObjectId", "participantId": "ObjectId", "position": "String", "prizeName": "String" }` |
-| **Update Winner** | `PUT` | `/convenor/winner/:id` | `{ "position": "New Value", ... }` |
+| **Update Winner** | `PUT` | `/convenor/winner/:id` | `{ "eventId": "ObjectId", "participantId": "ObjectId", "position": "String", "prizeName": "String" }` |
 | **Delete Winner** | `DELETE` | `/convenor/winner/:id` | `id` (Param) |
 | **Winners by Event** | `GET` | `/convenor/winners/event/:eventId` | `eventId` (Param) |
 
 ---
 
-## 4. Sentiment & Pulse Analytics (R2Q5)
-**Description:** Captures participant feedback and calculates event ratings.
+## 4. Feedback & Rating Analysis Engine (R2Q5)
+**System Description:**
+This module captures participant experiences to help improve future event quality. It allows users to submit qualitative feedback and give numerical ratings for the events they attended. The system automatically calculates average scores and provides organizers with immediate insights into overall participant satisfaction.
 
 | Function | Method | Endpoint | Payload (Body/Query) |
 | :--- | :--- | :--- | :--- |
 | **Submit Feedback** | `POST` | `/f-r/feedback` | `{ "participantId": "ObjectId", "comment": "String" }` |
 | **View Feedback** | `GET` | `/f-r/feedback` | *None* |
-| **Edit Feedback** | `PUT` | `/f-r/feedback/:id` | `{ "comment": "Updated String" }` |
-| **Delete Feedback** | `DELETE` | `/f-r/feedback/:id` | `id` (Param) |
-| **Submit Rating** | `POST` | `/f-r/rating` | `{ "participantId": "ObjectId", "score": Number }` |
+| **Edit Feedback** | `PUT` | `/f-r/feedback/:id` | `{ "comment": "String" }` |
+| **Delete Feedback** | `DELETE` | `/f-r/feedback/:id" | `id` (Param) |
+| **Submit Rating** | `POST` | `/f-r/rating` | `{ "participantId": "ObjectId", "score": "Number" }` |
 | **Average Rating** | `GET` | `/f-r/rating/average` | *None* |
 
 ---
 
-## 5. Nexus Lost & Found (R2Q6)
-**Description:** Tracking and management system for misplaced items.
+## 5. Lost & Found Asset Registry (R2Q6)
+**System Description:**
+This module provides a structured way to track misplaced and discovered items across the campus. It manages the entire process from reporting a lost item to matching it with a found record and validating claims. By centralizing these reports, the system makes it much faster for owners to recover their belongings securely.
 
 | Function | Method | Endpoint | Payload (Body/Query) |
 | :--- | :--- | :--- | :--- |
-| **Report Lost** | `POST` | `/l-f/lost` | `{ "itemName": "S", "description": "S", "category": "S", "location": "S", "reporterName": "S", "reporterContact": "S" }` |
-| **Report Found** | `POST` | `/l-f/found` | `{Same payload as above}` |
+| **Report Lost** | `POST` | `/l-f/lost` | `{ "itemName": "String", "description": "String", "category": "String", "location": "String", "reporterName": "String", "reporterContact": "String" }` |
+| **Report Found** | `POST` | `/l-f/found` | `{ "itemName": "String", "description": "String", "category": "String", "location": "String", "reporterName": "String", "reporterContact": "String" }` |
 | **View Lost** | `GET` | `/l-f/lost` | *None* |
 | **View Found** | `GET` | `/l-f/found` | *None* |
 | **Match Items** | `POST` | `/l-f/match` | `{ "lostItemId": "ObjectId", "foundItemId": "ObjectId" }` |
-| **Claim Item** | `POST` | `/l-f/claim` | `{ "itemId": "ObjectId", "claimantName": "S", "claimantContact": "S", "reason": "S" }` |
+| **Claim Item** | `POST` | `/l-f/claim` | `{ "itemId": "ObjectId", "claimantName": "String", "claimantContact": "String", "reason": "String" }` |
 | **Approve Claim** | `PUT` | `/l-f/claim/approve/:claimId` | `claimId` (Param) |
 | **Cancel Claim** | `PUT` | `/l-f/claim/cancel/:claimId` | `claimId` (Param) |
 | **Mark Returned** | `PUT` | `/l-f/item/returned/:itemId` | `itemId` (Param) |
