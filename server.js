@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URI)
 const app = express();
 const cors = require("cors");
 app.use(cors({
-  origin: true,
+  origin: ["http://localhost:5173", "http://localhost:5174"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -34,8 +34,8 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("🚀 BlindBuild API running...");
 });
-app.post("/debug", (req,res)=>{
-  res.json({msg:"debug working"});
+app.post("/debug", (req, res) => {
+  res.json({ msg: "debug working" });
 });
 // Routes
 app.use("/api/round1", round1Routes);
