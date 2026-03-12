@@ -188,3 +188,64 @@ exports.PMF = (req, res) => {
   const output = isPrime(input1.length);
   res.json({ message: "Success", output });
 };
+// 15. First-Letter Extractor
+// POST /api/v1/start
+// {"text": "DEVELOPER"} → {"status": "success", "result": "D"}
+exports.firstLetter = (req, res) => {
+  const { text } = req.body;
+  if (!text || text.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Empty input" });
+  }
+  res.json({ status: "success", result: text[0] });
+};
+
+// 16. Uppercase Counter
+// POST /api/v1/count-upper
+// {"text": "HeLLo"} → {"status": "success", "result": 3}
+exports.countUpper = (req, res) => {
+  const { text } = req.body;
+  if (typeof text !== "string" || /[0-9]/.test(text)) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const result = text.split("").filter(c => c >= "A" && c <= "Z").length;
+  res.json({ status: "success", result });
+};
+
+// 17. Duplicate Detector
+// POST /api/v1/duplicate
+// {"text": "apple"} → {"status": "success", "result": true}
+exports.duplicateDetector = (req, res) => {
+  const { text } = req.body;
+  if (typeof text !== "string" || text.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const result = new Set(text).size !== text.length;
+  res.json({ status: "success", result });
+};
+
+// 18. Word Sorter
+// POST /api/v1/sort
+// {"input": "blind"} → {"status": "success", "result": "bdiln"}
+exports.wordSorter = (req, res) => {
+  const { input } = req.body;
+  if (typeof input !== "string" || input.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const result = input.split("").sort().join("");
+  res.json({ status: "success", result });
+};
+
+// 19. Middle Character
+// POST /api/v1/middle
+// {"text": "coding"} → {"status": "success", "result": "d"}
+// Even length → two middle chars; Odd length → one middle char
+exports.middleChar = (req, res) => {
+  const { text } = req.body;
+  if (typeof text !== "string" || text.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const len = text.length;
+  const mid = Math.floor(len / 2);
+  const result = len % 2 === 0 ? text.slice(mid - 1, mid + 1) : text[mid];
+  res.json({ status: "success", result });
+};
