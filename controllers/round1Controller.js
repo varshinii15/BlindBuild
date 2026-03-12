@@ -188,3 +188,4 @@ exports.PMF = (req, res) => {
   const output = isPrime(input1.length);
   res.json({ message: "Success", output });
 };
+

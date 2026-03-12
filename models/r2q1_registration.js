@@ -10,6 +10,7 @@ const RegistrationSchema = new mongoose.Schema({
   eventId: {
     type: String,
     required: true,
+    enum:['Hackathon','Workshop','Seminar'],
     ref: "Event"
   },
   status: {

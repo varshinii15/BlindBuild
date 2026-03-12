@@ -6,11 +6,10 @@ const {
   combineColors,
   vowelOrbit,
   gravityProcess,
-  HNP,RFC, TDL, PMF
-
+  HNP,RFC, TDL, PMF, firstLetterExtractor, uppercaseCounter, duplicateDetector, wordSorter, middleCharacter
 
 } = require("../controllers/round1Controller");
-console.log("✅ Round1 routes file loaded")
+
 
 const router = express.Router();
 

@@ -5,6 +5,7 @@ dotenv.config();
 
 const round1Routes = require("./routes/round1Routes");
 const r2q1Routes = require("./routes/r2q1_Routes");
+const r2q2Routes = require("./routes/r2q2_Routes");
 const r2q4Routes = require("./routes/r2q4_Routes");
 const r2q5Routes = require("./routes/r2q5_Routes");
 
@@ -30,9 +31,10 @@ app.post("/debug", (req,res)=>{
 });
 // Routes
 app.use("/api/round1", round1Routes);
-app.use("/api/r2q1", r2q1Routes);
-app.use("/api/r2q4", r2q4Routes);
-app.use("/api/r2q5", r2q5Routes);
+app.use("/api/round2/eve-reg", r2q1Routes);
+app.use("/api/round2/w-s", r2q2Routes);
+app.use("/api/round2/check-in", r2q4Routes);
+app.use("/api/round2/f-r", r2q5Routes);
 
 // Start server
 const PORT = process.env.PORT || 5000;
