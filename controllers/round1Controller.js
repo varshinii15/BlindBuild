@@ -188,4 +188,148 @@ exports.PMF = (req, res) => {
   const output = isPrime(input1.length);
   res.json({ message: "Success", output });
 };
+// 15. First-Letter Extractor
+// POST /api/v1/start
+// {"text": "DEVELOPER"} → {"status": "success", "result": "D"}
+exports.firstLetter = (req, res) => {
+  const { text } = req.body;
+  if (!text || text.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Empty input" });
+  }
+  res.json({ status: "success", result: text[0] });
+};
+
+// 16. Uppercase Counter
+// POST /api/v1/count-upper
+// {"text": "HeLLo"} → {"status": "success", "result": 3}
+exports.countUpper = (req, res) => {
+  const { text } = req.body;
+  if (typeof text !== "string" || /[0-9]/.test(text)) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const result = text.split("").filter(c => c >= "A" && c <= "Z").length;
+  res.json({ status: "success", result });
+};
+
+// 17. Duplicate Detector
+// POST /api/v1/duplicate
+// {"text": "apple"} → {"status": "success", "result": true}
+exports.duplicateDetector = (req, res) => {
+  const { text } = req.body;
+  if (typeof text !== "string" || text.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const result = new Set(text).size !== text.length;
+  res.json({ status: "success", result });
+};
+
+// 18. Word Sorter
+// POST /api/v1/sort
+// {"input": "blind"} → {"status": "success", "result": "bdiln"}
+exports.wordSorter = (req, res) => {
+  const { input } = req.body;
+  if (typeof input !== "string" || input.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const result = input.split("").sort().join("");
+  res.json({ status: "success", result });
+};
+
+// 19. Middle Character
+// POST /api/v1/middle
+// {"text": "coding"} → {"status": "success", "result": "d"}
+// Even length → two middle chars; Odd length → one middle char
+exports.middleChar = (req, res) => {
+  const { text } = req.body;
+  if (typeof text !== "string" || text.length === 0) {
+    return res.status(400).json({ status: "error", code: 400, msg: "Invalid input" });
+  }
+  const len = text.length;
+  const mid = Math.floor(len / 2);
+  const result = len % 2 === 0 ? text.slice(mid - 1, mid + 1) : text[mid];
+  res.json({ status: "success", result });
+};
+
+
+
+
+exports.Mirror = (req, res) => {
+  const { text } = req.body;
+
+  if (!text || text.trim() === "") {
+    return res.status(400).json({
+      status: "error",
+      code: 400,
+      msg: "Empty input",
+    });
+  }
+
+  const result = text.split("").reverse().join("");
+
+  return res.status(200).json({
+    status: "success",
+    result,
+  });
+};
+// Controller 12: Even-Odd Gate
+ exports.evenOddGate = (req, res) => {
+  const { number } = req.body;
+
+  if (number === undefined || number === null || isNaN(Number(number)) || typeof number === "string" && number.trim() === "") {
+    return res.status(400).json({
+      status: "error",
+      code: 400,
+      msg: "Invalid number",
+    });
+  }
+
+  const num = Number(number);
+  const result = num % 2 === 0 ? "Even" : "Odd";
+
+  return res.status(200).json({
+    status: "success",
+    result,
+  });
+};
+
+// Controller 13: Alphabet Position
+exports.alphabetPosition = (req, res) => {
+  const { char } = req.body;
+
+  if (!char || char.length !== 1 || !/^[a-zA-Z]$/.test(char)) {
+    return res.status(400).json({
+      status: "error",
+      code: 400,
+      msg: "Invalid character",
+    });
+  }
+
+  const result = char.toUpperCase().charCodeAt(0) - 64; // 'A' = 65, so A→1, B→2, ..., Z→26
+
+  return res.status(200).json({
+    status: "success",
+    result,
+  });
+};
+
+// Controller 14: Word Length Counter
+exports.wordLengthCounter = (req, res) => {
+  const { word } = req.body;
+
+  if (!word || word.trim() === "" || /\s/.test(word)) {
+    return res.status(400).json({
+      status: "error",
+      code: 400,
+      msg: "Invalid input",
+    });
+  }
+
+  const result = word.length;
+
+  return res.status(200).json({
+    status: "success",
+    result,
+  });
+};
+
 

@@ -34,6 +34,17 @@ router.post("/problem7",HNP);
 router.post("/problem8",RFC);
 router.post("/problem9",TDL);
 router.post("/problem10",PMF);
+router.post("/problem15",firstLetter);
+router.post("/problem16",countUpper);
+router.post("/problem17",duplicateDetector);
+router.post("/problem18",middleChar);
+router.post("/problem19",wordSorter);
+
+router.post ("/problem11",Mirror)
+router.post ("/problem12",evenOddGate)
+router.post ("/problem13",alphabetPosition)
+router.post ("/problem14",wordLengthCounter)
+
 
 
 
