@@ -16,11 +16,12 @@ router.get("/found", lnfController.getFoundItems);
 router.post("/match", lnfController.matchItems);
 
 // Claim
+router.get("/claim", lnfController.getAllClaims);
 router.post("/claim", lnfController.claimItem);
 router.put("/claim/approve/:claimId", lnfController.approveClaim);
 router.put("/claim/cancel/:claimId", lnfController.cancelClaim);
 
 // Status
-router.put("/item/returned/:itemId", lnfController.markAsReturned);
+router.put("/item/returned/:refId", lnfController.markAsReturned);
 
 module.exports = router;

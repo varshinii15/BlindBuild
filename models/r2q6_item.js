@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const ItemSchema = new mongoose.Schema({
+    refId: {
+        type: String,
+        unique: true
+    },
     type: {
         type: String,
         enum: ["Lost", "Found"],

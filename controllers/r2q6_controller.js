@@ -1,12 +1,23 @@
 const Item = require("../models/r2q6_item");
 const Claim = require("../models/r2q6_claim");
 
+// Get all claims (admin)
+exports.getAllClaims = async (req, res) => {
+    try {
+        const claims = await Claim.find().populate("itemId").sort({ createdAt: -1 });
+        res.json(claims);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // Report a lost item
 exports.reportLostItem = async (req, res) => {
     try {
-        const item = new Item({ ...req.body, type: "Lost", status: "Open" });
+        const refId = `LOST-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        const item = new Item({ ...req.body, refId, type: "Lost", status: "Open" });
         await item.save();
-        res.status(201).json({ message: "Lost item reported successfully", item });
+        res.status(201).json({ message: "Lost item reported successfully", refId, item });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -15,9 +26,10 @@ exports.reportLostItem = async (req, res) => {
 // Report a found item
 exports.reportFoundItem = async (req, res) => {
     try {
-        const item = new Item({ ...req.body, type: "Found", status: "Open" });
+        const refId = `FND-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+        const item = new Item({ ...req.body, refId, type: "Found", status: "Open" });
         await item.save();
-        res.status(201).json({ message: "Found item reported successfully", item });
+        res.status(201).json({ message: "Found item reported successfully", refId, item });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -46,10 +58,9 @@ exports.getFoundItems = async (req, res) => {
 // Match a found item with a lost report
 exports.matchItems = async (req, res) => {
     try {
-        const { lostItemId, foundItemId } = req.body;
-        const lostItem = await Item.findById(lostItemId);
-        const foundItem = await Item.findById(foundItemId);
-
+        const { lostRefId, foundRefId } = req.body;
+        const lostItem = await Item.findOne({ refId: lostRefId });
+        const foundItem = await Item.findOne({ refId: foundRefId });
         if (!lostItem || !foundItem) return res.status(404).json({ message: "Items not found" });
 
         lostItem.status = "Matched";
@@ -70,14 +81,14 @@ exports.matchItems = async (req, res) => {
 // Claim an item
 exports.claimItem = async (req, res) => {
     try {
-        const { itemId, claimantName, claimantContact, reason } = req.body;
-        const item = await Item.findById(itemId);
+        const { refId, claimantName, claimantContact, reason } = req.body;
+        const item = await Item.findOne({ refId });
 
         if (!item || item.type !== "Found") {
             return res.status(404).json({ message: "Found item not found" });
         }
 
-        const claim = new Claim({ itemId, claimantName, claimantContact, reason });
+        const claim = new Claim({ itemId: item._id, claimantName, claimantContact, reason });
         await claim.save();
 
         item.status = "Claimed";
@@ -113,8 +124,8 @@ exports.approveClaim = async (req, res) => {
 // Mark item as returned
 exports.markAsReturned = async (req, res) => {
     try {
-        const { itemId } = req.params;
-        const item = await Item.findById(itemId);
+        const { refId } = req.params;
+        const item = await Item.findOne({ refId });
 
         if (!item) return res.status(404).json({ message: "Item not found" });
 

@@ -267,6 +267,59 @@ document.getElementById('add-winner-form').addEventListener('submit', async (e) 
   alert(result.message);
 });
 
+document.getElementById('fetch-claims-btn').addEventListener('click', async (e) => {
+  const btn = e.target;
+  const list = document.getElementById('admin-claims-list');
+
+  if (btn.textContent === 'Close Claims') {
+    list.innerHTML = '';
+    btn.textContent = 'View All Claims';
+    return;
+  }
+
+  const claims = await apiCall('/l-f/claim');
+  list.innerHTML = claims.length ? claims.map(c => `
+    <div class="item-row" style="border-left-color: ${c.status === 'Approved' ? 'var(--accent)' : 'var(--primary)'};">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <strong>Claim by: ${c.claimantName}</strong>
+        <small style="color: var(--secondary); font-weight: bold;">#${c.itemId?.refId || 'N/A'}</small>
+      </div>
+      <p style="margin: 0.25rem 0; font-size: 0.9rem;"><strong>Item:</strong> ${c.itemId?.itemName || 'Unknown'}</p>
+      <p style="margin: 0.25rem 0; font-size: 0.8rem;"><strong>Reason:</strong> ${c.reason}</p>
+      <small>Contact: ${c.claimantContact} | Status: <span style="color: var(--accent)">${c.status}</span></small>
+      ${c.status === 'Pending' ? `
+        <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem;">
+          <button class="btn-primary approve-claim-btn" data-id="${c._id}" style="width: auto; padding: 4px 8px; font-size: 0.7rem; background: var(--accent);">Approve</button>
+          <button class="btn-primary cancel-claim-btn" data-id="${c._id}" style="width: auto; padding: 4px 8px; font-size: 0.7rem; background: var(--secondary);">Reject</button>
+        </div>
+      ` : ''}
+    </div>
+  `).join('') : '<p>No claims found.</p>';
+
+  btn.textContent = 'Close Claims';
+
+  // Add listeners for approve/reject
+  list.querySelectorAll('.approve-claim-btn').forEach(abtn => {
+    abtn.addEventListener('click', async () => {
+      const claimId = abtn.dataset.id;
+      const res = await apiCall(`/l-f/claim/approve/${claimId}`, 'PUT');
+      alert(res.message);
+      document.getElementById('fetch-claims-btn').click(); // Refresh
+      document.getElementById('fetch-claims-btn').click(); 
+    });
+  });
+
+  list.querySelectorAll('.cancel-claim-btn').forEach(rbtn => {
+    rbtn.addEventListener('click', async () => {
+      const claimId = rbtn.dataset.id;
+      const res = await apiCall(`/l-f/claim/cancel/${claimId}`, 'PUT');
+      alert(res.message);
+      document.getElementById('fetch-claims-btn').click(); // Refresh
+      document.getElementById('fetch-claims-btn').click();
+    });
+  });
+});
+
 // --- R2Q5: Feedback ---
 document.getElementById('submit-feedback-form').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -293,14 +346,36 @@ document.getElementById('report-item-form').addEventListener('submit', async (e)
   alert(result.message);
 });
 
-document.getElementById('view-lost-btn').addEventListener('click', async () => {
+document.getElementById('view-lost-btn').addEventListener('click', async (e) => {
+  const btn = e.target;
+  const list = document.getElementById('items-list');
+
+  if (btn.textContent === 'Close Lost Items') {
+    list.innerHTML = '';
+    btn.textContent = 'Lost Items';
+    return;
+  }
+
   const items = await apiCall('/l-f/lost');
   updateItemList(items, 'lost items');
+  btn.textContent = 'Close Lost Items';
+  document.getElementById('view-found-btn').textContent = 'Found Items';
 });
 
-document.getElementById('view-found-btn').addEventListener('click', async () => {
+document.getElementById('view-found-btn').addEventListener('click', async (e) => {
+  const btn = e.target;
+  const list = document.getElementById('items-list');
+
+  if (btn.textContent === 'Close Found Items') {
+    list.innerHTML = '';
+    btn.textContent = 'Found Items';
+    return;
+  }
+
   const items = await apiCall('/l-f/found');
   updateItemList(items, 'found items');
+  btn.textContent = 'Close Found Items';
+  document.getElementById('view-lost-btn').textContent = 'Lost Items';
 });
 
 function updateItemList(items, typeLabel = 'items') {
@@ -310,11 +385,47 @@ function updateItemList(items, typeLabel = 'items') {
     return;
   }
   list.innerHTML = items.map(item => `
-    <div class="item-row">
-      <strong>${item.itemName}</strong> (${item.type})<br>
-      <small>Category: ${item.category}</small><br>
-      <small>Description: ${item.description}</small><br>
-      <small>Location: ${item.location} | Status: ${item.status}</small>
+    <div class="item-row" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <strong>${item.itemName}</strong>
+          <small style="color: var(--primary); font-weight: bold;">#${item.refId}</small>
+        </div>
+        <p style="margin: 0.25rem 0; font-size: 0.9rem;">${item.description}</p>
+        <small>Category: ${item.category} | Location: ${item.location}</small><br>
+        <small>Status: <span style="color: var(--accent)">${item.status}</span> | Reported by: ${item.reporterName}</small>
+      </div>
+      ${item.type === 'Found' && item.status === 'Open' ? `
+        <button class="btn-primary claim-item-btn" data-ref="${item.refId}" style="width: auto; padding: 5px 10px; font-size: 0.8rem;">Claim</button>
+      ` : ''}
     </div>
   `).join('');
+
+  // Add click listeners to claim buttons
+  document.querySelectorAll('.claim-item-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const refId = e.target.getAttribute('data-ref');
+      const claimantName = prompt('Enter your name:');
+      if (!claimantName) return;
+      const claimantContact = prompt('Enter your contact info:');
+      if (!claimantContact) return;
+      const reason = prompt('Briefly describe why you are claiming this item (e.g. proof of ownership):');
+      if (!reason) return;
+
+      try {
+        const result = await apiCall('/l-f/claim', 'POST', {
+          refId,
+          claimantName,
+          claimantContact,
+          reason
+        });
+        alert(result.message);
+        // Refresh the list
+        document.getElementById('view-found-btn').click(); 
+        document.getElementById('view-found-btn').click(); 
+      } catch (error) {
+        console.error('Claim failed:', error);
+      }
+    });
+  });
 }
