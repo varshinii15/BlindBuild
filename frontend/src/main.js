@@ -103,8 +103,48 @@ document.getElementById('view-workshops-btn').addEventListener('click', async ()
           </button>
         `).join('')}
       </div>
+      <button class="tab-btn" style="margin-top: 10px; font-size: 0.8rem; padding: 4px;" onclick="event.stopPropagation(); window.viewWorkshopData('${w._id}')">View Details (API Test)</button>
     </div>
   `).join('') : '<p>No workshops found.</p>';
+});
+
+// Helper for testing getWorkshopById and getWorkshopSlots
+window.viewWorkshopData = async (workshopId) => {
+  try {
+    const wsDetails = await apiCall(`/w-s/workshops/${workshopId}`);
+    const wsSlots = await apiCall(`/w-s/workshops/${workshopId}/slots`);
+    alert(`Workshop Details:\nTitle: ${wsDetails.workshop.title}\nDescription: ${wsDetails.workshop.description}\nAvailable Slots: ${wsSlots.slots.length}`);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+document.getElementById('workshop-details-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('specific-workshop-id').value.trim();
+  if (!id) return;
+  const result = await apiCall(`/w-s/workshops/${id}`);
+  const w = result.workshop;
+  document.getElementById('specific-workshop-result').innerHTML = `
+    <div class="item-row">
+      <strong>${w.title}</strong><br>
+      <small>${w.description}</small><br>
+      <small>Total Slots Configured: ${w.slots ? w.slots.length : 0}</small>
+    </div>
+  `;
+});
+
+document.getElementById('fetch-slots-btn').addEventListener('click', async () => {
+  const id = document.getElementById('specific-workshop-id').value.trim();
+  if (!id) return alert('Enter a Workshop ID first');
+  const result = await apiCall(`/w-s/workshops/${id}/slots`);
+  const slots = result.slots || [];
+  document.getElementById('specific-workshop-result').innerHTML = slots.length ? slots.map(s => `
+    <div class="item-row">
+      <strong>Slot ID: ${s._id}</strong><br>
+      <small>Time: ${s.time} | Available: ${s.available ? '✅ Yes' : '❌ No'}</small>
+    </div>
+  `).join('') : '<p>No slots found.</p>';
 });
 
 document.getElementById('book-slot-form').addEventListener('submit', async (e) => {
@@ -127,10 +167,31 @@ document.getElementById('check-booking-btn').addEventListener('click', async () 
   list.innerHTML = bookings.length ? bookings.map(b => `
     <div class="item-row">
       <strong>Workshop: ${b.workshopId?.title || 'Unknown'}</strong><br>
+      <small>Booking ID: ${b._id}</small><br>
       <small>Time: ${b.slotId?.time || 'Unknown'}</small><br>
       <small>Status: ${b.status}</small>
+      ${b.status !== 'cancelled' ? `<br><button class="tab-btn remove-member" style="margin-top: 5px; color: var(--secondary); padding: 2px 5px;" onclick="window.cancelBooking('${b._id}')">Cancel Booking</button>` : ''}
     </div>
   `).join('') : '<p>No bookings found for this user.</p>';
+});
+
+window.cancelBooking = async (bookingId) => {
+  if (!confirm('Are you sure you want to cancel this booking?')) return;
+  try {
+    const result = await apiCall('/w-s/cancel-slot', 'DELETE', { bookingId });
+    alert(result.msg);
+    document.getElementById('check-booking-btn').click(); // Refresh list
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+document.getElementById('cancel-booking-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const bookingId = document.getElementById('cancel-booking-id').value.trim();
+  if (!bookingId) return;
+  const result = await apiCall('/w-s/cancel-slot', 'DELETE', { bookingId });
+  alert(result.msg);
 });
 
 // --- R2Q4: Convenor Hub ---

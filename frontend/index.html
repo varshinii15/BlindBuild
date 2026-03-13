@@ -64,6 +64,18 @@
               <h2>Workshop Explorer</h2>
               <button id="view-workshops-btn" class="btn-primary" style="margin-bottom: 1rem;">View All Workshops</button>
               <div id="workshops-list" class="result-list"></div>
+              
+              <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                <h3>Workshop Details & Slots</h3>
+                <form id="workshop-details-form">
+                  <div class="form-group" style="margin-top: 0.5rem;">
+                     <input type="text" id="specific-workshop-id" placeholder="Enter Workshop ID" required />
+                  </div>
+                  <button type="submit" class="btn-primary" style="margin-bottom: 0.5rem;">Fetch Details</button>
+                  <button type="button" id="fetch-slots-btn" class="btn-primary" style="background: var(--secondary);">Fetch Slots Only</button>
+                </form>
+                <div id="specific-workshop-result" class="result-list"></div>
+              </div>
             </div>
             <div class="glass-card">
               <h2>Book a Slot</h2>
@@ -89,6 +101,15 @@
                 </div>
                 <button id="check-booking-btn" class="btn-primary">View My Schedule</button>
                 <div id="user-bookings-list" class="result-list"></div>
+              </div>
+              <div style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1rem;">
+                <h3>Cancel a Booking</h3>
+                <form id="cancel-booking-form">
+                  <div class="form-group" style="margin-top: 0.5rem;">
+                     <input type="text" id="cancel-booking-id" placeholder="Enter Booking ID" required />
+                  </div>
+                  <button type="submit" class="btn-primary" style="background: var(--accent);">Cancel Booking</button>
+                </form>
               </div>
             </div>
           </div>
