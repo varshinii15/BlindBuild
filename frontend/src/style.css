@@ -194,10 +194,18 @@ button.btn-primary:hover {
 }
 
 .item-row {
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius);
   border-left: 4px solid var(--primary);
+  transition: var(--transition);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.item-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(5px);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Animations */

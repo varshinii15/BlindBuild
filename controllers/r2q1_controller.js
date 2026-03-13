@@ -22,6 +22,9 @@ exports.createParticipant = async (req, res) => {
     await participant.save();
     res.status(201).json({ message: "Team created successfully", participant });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ error: "Team name already exists. Choose another name." });
+    }
     res.status(400).json({ error: error.message });
   }
 };
@@ -43,7 +46,15 @@ exports.createEvent = async (req, res) => {
 exports.getEvents = async (req, res) => {
   try {
     const events = await Event.find();
-    res.json(events);
+    const formattedEvents = events.map(event => ({
+      id: event._id,
+      name: event.title,
+      description: event.description,
+      location: event.location,
+      date: event.date,
+      "maximum limit": event.capacity
+    }));
+    res.json(formattedEvents);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -54,10 +65,13 @@ exports.getEvents = async (req, res) => {
 // Register Participant for Event
 exports.registerEvent = async (req, res) => {
   try {
-    const { ParticipantId, eventId } = req.body;
+    const { Teamname, eventId } = req.body;
+
+    const participant = await Participant.findOne({ Teamname });
+    if (!participant) return res.status(404).json({ error: "Team not found" });
 
     const registration = new Registration({
-      ParticipantId,
+      ParticipantId: participant._id,
       eventId,
       status: "Registered"
     });
@@ -72,11 +86,23 @@ exports.registerEvent = async (req, res) => {
 // Get Registration Status
 exports.getRegistrationStatus = async (req, res) => {
   try {
-    const { id } = req.params;
-    const registration = await Registration.findById(id);
+    const { teamName } = req.params;
+    const participant = await Participant.findOne({ Teamname: teamName });
+    if (!participant) return res.status(404).json({ message: "Team not found" });
 
-    if (!registration) return res.status(404).json({ message: "Registration not found" });
-    res.json(registration);
+    const registrations = await Registration.find({ ParticipantId: participant._id }).populate("eventId");
+
+    // Fetch tickets for these registrations to show in the UI
+    const registrationsWithTickets = await Promise.all(registrations.map(async (reg) => {
+      const ticket = await Ticket.findOne({ registrationId: reg._id });
+      return {
+        ...reg.toObject(),
+        ticketCode: ticket ? ticket.ticketCode : null
+      };
+    }));
+
+    if (registrations.length === 0) return res.status(404).json({ message: "No registrations found for this team" });
+    res.json(registrationsWithTickets);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -85,9 +111,15 @@ exports.getRegistrationStatus = async (req, res) => {
 // Cancel Registration
 exports.cancelRegistration = async (req, res) => {
   try {
-    const { id } = req.params;
-    const registration = await Registration.findByIdAndUpdate(
-      id,
+    const { teamName, eventTitle } = req.params;
+
+    const participant = await Participant.findOne({ Teamname: teamName });
+    const event = await Event.findOne({ title: eventTitle });
+
+    if (!participant || !event) return res.status(404).json({ message: "Team or Event not found" });
+
+    const registration = await Registration.findOneAndUpdate(
+      { ParticipantId: participant._id, eventId: event._id },
       { status: "Not Registered" },
       { new: true }
     );
@@ -104,19 +136,42 @@ exports.cancelRegistration = async (req, res) => {
 // Generate Ticket
 exports.generateTicket = async (req, res) => {
   try {
-    const { registrationId, userId, eventId } = req.body;
+    const { Teamname, eventTitle } = req.body;
 
-    // Use a unique string for QR data (ticket info + timestamp)
-    const qrData = `${registrationId}-${userId}-${eventId}-${Date.now()}`;
+    const participant = await Participant.findOne({ Teamname });
+    const event = await Event.findOne({ title: eventTitle });
 
-    // Generate QR code as base64 image string
+    if (!participant || !event) return res.status(404).json({ message: "Team or Event not found" });
+
+    const registration = await Registration.findOne({
+      ParticipantId: participant._id,
+      eventId: event._id,
+      status: "Registered"
+    });
+
+    if (!registration) return res.status(400).json({ message: "Active registration not found for this event" });
+
+    // Check if ticket already exists
+    const existingTicket = await Ticket.findOne({ registrationId: registration._id });
+    if (existingTicket) {
+      return res.status(200).json({ 
+        message: "Ticket already generated", 
+        ticket: existingTicket 
+      });
+    }
+
+    // Generate a human-readable ticket code
+    const ticketCode = `TIC-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
+    // Use ticket code for QR data
+    const qrData = `${ticketCode}-${Teamname}-${eventTitle}`;
     const qrCodeImage = await QRCode.toDataURL(qrData);
 
-    // Create ticket
     const ticket = new Ticket({
-      registrationId,
-      userId,
-      eventId,
+      ticketCode,
+      registrationId: registration._id,
+      userId: participant._id,
+      eventId: event._id,
       qrCode: qrCodeImage,
       status: "Valid"
     });
@@ -135,8 +190,10 @@ exports.generateTicket = async (req, res) => {
 // Get Ticket Details
 exports.getTicketDetails = async (req, res) => {
   try {
-    const { id } = req.params;
-    const ticket = await Ticket.findById(id);
+    const { ticketCode } = req.params;
+    const ticket = await Ticket.findOne({ ticketCode })
+      .populate("userId", "Teamname")
+      .populate("eventId", "title location date");
 
     if (!ticket) return res.status(404).json({ message: "Ticket not found" });
     res.json(ticket);

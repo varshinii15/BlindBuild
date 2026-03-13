@@ -25,7 +25,9 @@
         <!-- R2Q1: Events & Registration -->
         <section id="r2q1" class="tab-content active">
           <div class="grid">
-            <div class="glass-card">
+            <!-- Left Column: Registration -->
+            <div class="column">
+              <div class="glass-card">
               <h2>Join the Event</h2>
               <form id="create-participant-form">
                 <div class="form-group">
@@ -49,13 +51,27 @@
                 <button type="submit" class="btn-primary">Create Team</button>
               </form>
             </div>
-            <div class="glass-card">
+          </div>
+
+          <!-- Right Column: Events & Status -->
+          <div class="column">
+            <div class="glass-card" style="margin-bottom: 2rem;">
               <h2>Event Discovery</h2>
               <button id="fetch-events-btn" class="btn-primary" style="margin-bottom: 1rem;">Load Events</button>
               <div id="events-list" class="result-list"></div>
             </div>
+            <div class="glass-card">
+              <h2>Registration Status</h2>
+              <div class="form-group">
+                <label>Team Name</label>
+                <input type="text" id="check-reg-team-name" placeholder="Enter Team Name" />
+              </div>
+              <button id="check-reg-btn" class="btn-primary">View My Events</button>
+              <div id="reg-status-list" class="result-list" style="margin-top: 1rem;"></div>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         <!-- R2Q2: Workshops -->
         <section id="r2q2" class="tab-content">

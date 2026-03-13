@@ -5,6 +5,7 @@ const ParticipantSchema = new mongoose.Schema({
   Teamname: {
     type: String,
     required: true,
+    unique: true,
     trim: true
   },
   TeamMembers: [{
