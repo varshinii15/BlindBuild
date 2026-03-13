@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require("path");
 dotenv.config();
 
 const round1Routes = require("./routes/round1Routes");
@@ -37,6 +38,12 @@ app.get("/", (req, res) => {
 app.post("/debug", (req, res) => {
   res.json({ msg: "debug working" });
 });
+
+app.get("/overview", (req, res) => {
+  const overviewPath = path.join(__dirname, "templates", "overview.html");
+  res.sendFile(overviewPath);
+});
+
 // Routes
 app.use("/api/round1", round1Routes);
 app.use("/api/round2/events", r2q1Routes);

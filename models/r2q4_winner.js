@@ -8,7 +8,7 @@ const WinnerSchema = new mongoose.Schema({
     },
     participantId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "R2Q1_Participant",
+        ref: "Participant",
         required: true
     },
     position: {

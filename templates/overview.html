@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlindBuild Round 2 Overview</title>
+  <style>
+    :root {
+      --bg-1: #0f172a;
+      --bg-2: #1e293b;
+      --panel: #f8fafc;
+      --ink: #0f172a;
+      --ink-soft: #334155;
+      --line: #cbd5e1;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Lato", "Trebuchet MS", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(20, 184, 166, 0.15), transparent 30%),
+        radial-gradient(circle at 85% 20%, rgba(59, 130, 246, 0.12), transparent 28%),
+        linear-gradient(150deg, var(--bg-1), var(--bg-2));
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+
+    .shell {
+      width: min(1100px, 92vw);
+      margin: 42px auto;
+      background: rgba(248, 250, 252, 0.96);
+      border: 1px solid rgba(203, 213, 225, 0.7);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 24px 56px rgba(2, 6, 23, 0.32);
+      animation: rise-in 0.8s ease-out;
+    }
+
+    .head {
+      padding: 34px 34px 20px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(120deg, rgba(204, 251, 241, 0.55), rgba(219, 234, 254, 0.5));
+    }
+
+    .brand {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #0f766e;
+    }
+
+    .top-instruction {
+      margin: 0 0 14px;
+      padding: 12px 14px;
+      border: 1px solid #99f6e4;
+      border-left: 5px solid #0f766e;
+      border-radius: 10px;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 0.95rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Garamond", "Palatino Linotype", serif;
+      font-size: clamp(1.8rem, 2.5vw, 2.5rem);
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--ink-soft);
+      max-width: 780px;
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      padding: 24px;
+    }
+
+    .question {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+      animation: fade-in-up 0.6s ease both;
+    }
+
+    .question:nth-child(1) { animation-delay: 0.05s; }
+    .question:nth-child(2) { animation-delay: 0.1s; }
+    .question:nth-child(3) { animation-delay: 0.15s; }
+    .question:nth-child(4) { animation-delay: 0.2s; }
+    .question:nth-child(5) { animation-delay: 0.25s; }
+
+    .q-title {
+      margin: 0 0 6px;
+      font-family: "Garamond", "Palatino Linotype", serif;
+      font-size: 1.25rem;
+      line-height: 1.3;
+    }
+
+    h3 {
+      margin: 14px 0 6px;
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: #1e3a8a;
+    }
+
+    p {
+      margin: 0;
+      color: var(--ink-soft);
+    }
+
+    .foot {
+      border-top: 1px solid var(--line);
+      padding: 16px 24px 24px;
+      background: linear-gradient(120deg, rgba(219, 234, 254, 0.35), rgba(204, 251, 241, 0.35));
+    }
+
+    .note {
+      margin: 0;
+      background: white;
+      border: 1px solid #99f6e4;
+      border-left: 5px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: #0f172a;
+    }
+
+    @keyframes rise-in {
+      from {
+        transform: translateY(16px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fade-in-up {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .shell {
+        margin: 20px auto;
+        border-radius: 14px;
+      }
+
+      .head {
+        padding: 22px 20px 16px;
+      }
+
+      .grid {
+        padding: 14px;
+        gap: 12px;
+      }
+
+      .foot {
+        padding: 12px 14px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="head">
+      <p class="brand">BlindBuild</p>
+      <p class="top-instruction">
+        Participants are given an already deployed backend. API documentation will not be provided.
+        Teams must identify useful endpoints through exploration and integrate them into their frontend.
+        It is not necessary to discover every endpoint.
+      </p>
+      <h1>Round 2: Problem Brief for API Architecture</h1>
+      <p class="subtitle">
+        Participants must design the backend API structure required to support frontend workflows.
+        Each question below defines application behavior, user actions, and design expectations.
+      </p>
+    </header>
+
+    <section class="grid">
+      <article class="question">
+        <h2 class="q-title">1. Event Registration &amp; Ticket System</h2>
+        <h3>Problem Statement</h3>
+        <p>
+          This module manages participant onboarding and event sign-ups, while issuing unique digital tickets
+          to support smooth movement from registration to venue entry.
+        </p>
+        <h3>Scenario Context</h3>
+        <p>
+          The experience should cover account-level setup, event discovery, sign-up validation,
+          registration tracking, ticket identity generation, and cancellation handling when required.
+        </p>
+        <h3>Task Focus</h3>
+        <p>Design the complete API workflow, including resources, methods, payloads, and response formats.</p>
+        <h3>Concepts Tested</h3>
+        <p>API architecture, workflow design, and system thinking.</p>
+      </article>
+
+      <article class="question">
+        <h2 class="q-title">2. Workshop Slot Booking System</h2>
+        <h3>Problem Statement</h3>
+        <p>
+          This module supports workshop scheduling and seat reservation with time-slot awareness,
+          ensuring fair allocation and preventing overbooking.
+        </p>
+        <h3>Scenario Context</h3>
+        <p>
+          Participants should be able to browse workshop sessions, understand slot availability,
+          reserve preferred timings, update decisions when needed, and verify their booking state.
+        </p>
+        <h3>Task Focus</h3>
+        <p>Design APIs that manage nested workshop-slot relationships and booking lifecycle actions.</p>
+        <h3>Concepts Tested</h3>
+        <p>REST resource structure, nested resources, and end-to-end flow design.</p>
+      </article>
+
+      <article class="question">
+        <h2 class="q-title">3. Convenor &amp; Event Management Hub</h2>
+        <h3>Problem Statement</h3>
+        <p>
+          This organizer-facing module supports operational control during events,
+          including participant validation, attendance handling, and event-level result management.
+        </p>
+        <h3>Scenario Context</h3>
+        <p>
+          Convenors should be able to verify ticket authenticity, mark and revise attendance,
+          retrieve participant details, generate badge outputs, and manage winner records in a traceable flow.
+        </p>
+        <h3>Task Focus</h3>
+        <p>Design organizer-oriented APIs that support real-time event control and outcome management.</p>
+        <h3>Concepts Tested</h3>
+        <p>Operational workflow design, validation logic, and event data governance.</p>
+      </article>
+
+      <article class="question">
+        <h2 class="q-title">4. Event Feedback &amp; Rating System</h2>
+        <h3>Problem Statement</h3>
+        <p>
+          This module captures participant experience after events through written feedback and rating input,
+          helping organizers evaluate quality and satisfaction.
+        </p>
+        <h3>Scenario Context</h3>
+        <p>
+          Responses should remain manageable over time so entries can be reviewed, refined,
+          removed when needed, and aggregated into a meaningful performance overview.
+        </p>
+        <h3>Task Focus</h3>
+        <p>Design CRUD-ready feedback APIs and rating aggregation behavior with predictable response formats.</p>
+        <h3>Concepts Tested</h3>
+        <p>CRUD API design, data aggregation, and post-event analytics flow.</p>
+      </article>
+
+      <article class="question">
+        <h2 class="q-title">5. Lost &amp; Found Campus Portal</h2>
+        <h3>Problem Statement</h3>
+        <p>
+          This module provides a structured recovery process for misplaced items,
+          from initial reporting to validated return across campus event spaces.
+        </p>
+        <h3>Scenario Context</h3>
+        <p>
+          The flow should support item reporting, report matching, claim tracking,
+          admin-level decisions, and final closure with accountability at each stage.
+        </p>
+        <h3>Task Focus</h3>
+        <p>Design a multi-actor API workflow with clear claim states, role responsibilities, and status transitions.</p>
+        <h3>Concepts Tested</h3>
+        <p>Workflow modeling, resource linking, and status management.</p>
+      </article>
+    </section>
+
+    <footer class="foot">
+      <p class="note">
+        Instruction: Derive the complete backend API contract for each question without relying on pre-listed endpoint patterns.
+        Your design should include resources, HTTP methods, required payload fields, and response structures.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
